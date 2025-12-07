@@ -1,5 +1,3 @@
-from functools import total_ordering
-
 while True:
     try:
         days = int(input("Введите целое число: "))
