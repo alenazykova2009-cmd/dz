@@ -1,50 +1,69 @@
-import secrets
-import string
+class PowerControl:
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.is_on = False
 
-def generate_password(length, use_uppercase, use_lowercase, use_digits, use_special):
-    alphabet = ""
-    if use_lowercase:
-        alphabet += string.ascii_lowercase
-    if use_uppercase:
-        alphabet += string.ascii_uppercase
-    if use_digits:
-        alphabet += string.digits
-    if use_special:
-        alphabet += string.punctuation
+    def turn_on(self):
+        self.is_on = True
 
-    password = ""
-    for i in range(length):
-        password += secrets.choice(alphabet)
-    return password
-
-def check_password_strength(password):
-    has_upper = any(c.isupper() for c in password)
-    has_lower = any(c.islower() for c in password)
-    has_digit = any(c.isdigit() for c in password)
-    has_special = any(c in string.punctuation for c in password)
-
-    if len(password) >= 8 and has_upper and has_lower and has_digit and has_special:
-        return True
-    else:
-        return False
+    def turn_off(self):
+        self.is_on = False
 
 
-def generate_unique_passwords(count, length, use_uppercase, use_lowercase, use_digits, use_special):
-    unique_passwords = set()
-    while len(unique_passwords) < count:
-        password = generate_password(length, use_uppercase, use_lowercase, use_digits, use_special)
-        unique_passwords.add(password)
-    return list(unique_passwords)
+class BrightnessControl:
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.brightness = 50
 
-if __name__ == "__main__":
-    pwd = generate_password(10, True, True, True, True)
-    print("Сгенерируемый пароль:", pwd)
-
-    if check_password_strength(pwd):
-        print("Пароль надежный")
-    else:
-        print("Пароль не надежный")
+    def set_brightness(self, b):
+        self.brightness = max(0, min(100, b))
 
 
-    unique_passwords = generate_unique_passwords(3, 8, True, True, True, True)
-    print("Уникальные пароли:", unique_passwords)
+class TemperatureControl:
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.temperature = 22
+
+    def set_temperature(self, t):
+        self.temperature = max(-50, min(100, t))
+
+
+class VoiceControl:
+    def voice_command(self, cmd):
+        if "включи" in cmd:
+            self.turn_on()
+        elif "выключи" in cmd:
+            self.turn_off()
+
+
+class SmartLamp(PowerControl, BrightnessControl):
+    def __init__(self, name):
+        self.name = name
+        super().__init__()
+
+    def get_status(self):
+        if self.is_on:
+            return f"Лампа '{self.name}': включена, яркость {self.brightness}%"
+        return f"Лампа '{self.name}': выключена"
+
+
+class SmartThermostat(PowerControl, TemperatureControl):
+    def __init__(self, name):
+        self.name = name
+        super().__init__()
+
+    def get_status(self):
+        if self.is_on:
+            return f"Термостат '{self.name}': включен, температура {self.temperature}°C"
+        return f"Термостат '{self.name}': выключен"
+
+
+class SmartAC(PowerControl, BrightnessControl, TemperatureControl, VoiceControl):
+    def __init__(self, name):
+        self.name = name
+        super().__init__()
+
+    def get_status(self):
+        if self.is_on:
+            return f"Кондиционер '{self.name}': включен, {self.temperature}°C, яркость {self.brightness}%"
+        return f"Кондиционер '{self.name}': выключен"
